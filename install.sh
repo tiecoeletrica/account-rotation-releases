@@ -73,7 +73,7 @@ fi
 
 # 4. O lançador e os ícones, da versão instalada
 VERSAO="$BASE/versions/$ATUAL"
-cp "$VERSAO/launcher/start.mjs" "$VERSAO/launcher/carregando.html" "$VERSAO/app/public/icon.svg" "$VERSAO/app/public/icon-512.png" "$BASE/"
+cp "$VERSAO/launcher/start.mjs" "$VERSAO/launcher/carregando.html" "$VERSAO/launcher/statusline.mjs" "$VERSAO/app/public/icon.svg" "$VERSAO/app/public/icon-512.png" "$BASE/"
 
 # 5. Account Rotation.app: um pacote mínimo que roda o lançador com o Node portátil (montado aqui, então o macOS não bloqueia)
 passo "Criando o Account Rotation.app..."
@@ -113,5 +113,6 @@ iconutil -c icns "$ICONES" -o "$APP/Contents/Resources/icon.icns" || true
 touch "$APP"
 
 passo "Pronto! Abrindo o Account Rotation..."
+echo "  Ao abrir, o app configura a statusline do Claude Code para ler o uso das contas (a que já existir continua aparecendo)."
 open "$APP"
 printf '\n\033[36mDaqui para frente, abra pelo "Account Rotation" no Launchpad, no Spotlight ou em ~/Applications.\033[0m\n'
