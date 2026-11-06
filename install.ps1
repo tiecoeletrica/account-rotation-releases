@@ -79,7 +79,7 @@ try {
 
   # 4. O lançador e os ícones, da versão instalada
   $versao = Join-Path $Base "versions\$atual"
-  Copy-Item "$versao\launcher\start.mjs", "$versao\launcher\carregando.html" $Base -Force
+  Copy-Item "$versao\launcher\start.mjs", "$versao\launcher\carregando.html", "$versao\launcher\statusline.mjs" $Base -Force
   Copy-Item "$versao\app\public\icon.svg", "$versao\app\public\icon-512.png", "$versao\app\public\icon.ico" $Base -Force
   # abre o lançador sem janela de console
   @'
@@ -107,6 +107,7 @@ sh.Run """" & pasta & "\node\node.exe"" """ & pasta & "\start.mjs""", 0, False
 
   Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
   Passo 'Pronto! Abrindo o Account Rotation...'
+  Write-Host '  Ao abrir, o app configura a statusline do Claude Code para ler o uso das contas (a que já existir continua aparecendo).'
   Start-Process (Join-Path $env:WINDIR 'System32\wscript.exe') -ArgumentList ('"' + (Join-Path $Base 'start.vbs') + '"')
   Write-Host "`nDaqui para frente, abra pelo atalho 'Account Rotation' na área de trabalho ou no menu Iniciar." -ForegroundColor Cyan
 }
