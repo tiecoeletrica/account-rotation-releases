@@ -1,10 +1,10 @@
 #!/bin/bash
-# Instalador do Account Rotation para Mac. Roda uma vez, no Terminal:
+# Instalador do ClaudEco para Mac. Roda uma vez, no Terminal:
 #   curl -fsSL https://raw.githubusercontent.com/tiecoeletrica/account-rotation-releases/main/install.sh | bash
 # Rodar de novo conserta a instalação (app, lançador, Node) sem apagar nada.
 #
 # Instala em ~/Library/Application Support/AccountRotation: o Node portátil, a última versão do app e o lançador.
-# Instala o Google Chrome em ~/Applications se ele faltar. Cria "Account Rotation.app" em ~/Applications (aparece no
+# Instala o Google Chrome em ~/Applications se ele faltar. Cria "ClaudEco.app" em ~/Applications (aparece no
 # Launchpad e no Spotlight) e abre o app. As atualizações depois disso o próprio app faz, ao abrir.
 #
 # Variáveis para teste: AR_RELEASES_URL (de onde baixar), AR_BASE (pasta da instalação), AR_APLICATIVOS (onde pôr o .app)
@@ -28,7 +28,7 @@ achar_chrome() {
 }
 json() { "$BASE/node/bin/node" -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);console.log(j[process.argv[1]]??'')})" "$1"; }
 
-printf '\033[36mInstalando o Account Rotation\033[0m\n'
+printf '\033[36mInstalando o ClaudEco\033[0m\n'
 mkdir -p "$BASE" "$APLICATIVOS"
 
 # 1. Node portátil (a última LTS), dentro da pasta do app
@@ -75,14 +75,16 @@ fi
 VERSAO="$BASE/versions/$ATUAL"
 cp "$VERSAO/launcher/start.mjs" "$VERSAO/launcher/carregando.html" "$VERSAO/launcher/statusline.mjs" "$VERSAO/app/public/icon.svg" "$VERSAO/app/public/icon-512.png" "$BASE/"
 
-# 5. Account Rotation.app: um pacote mínimo que roda o lançador com o Node portátil (montado aqui, então o macOS não bloqueia)
-passo "Criando o Account Rotation.app..."
-APP="$APLICATIVOS/Account Rotation.app"
+# 5. ClaudEco.app: um pacote mínimo que roda o lançador com o Node portátil (montado aqui, então o macOS não bloqueia)
+passo "Criando o ClaudEco.app..."
+APP="$APLICATIVOS/ClaudEco.app"
 rm -rf "$APP"
+# o pacote com o nome antigo (o app se chamava Account Rotation) sai, para não ficarem dois
+rm -rf "$APLICATIVOS/Account Rotation.app"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cat > "$APP/Contents/MacOS/account-rotation" <<EOF
 #!/bin/bash
-# Abre o Account Rotation (criado pelo instalador). Fica aberto enquanto o app estiver aberto.
+# Abre o ClaudEco (criado pelo instalador). Fica aberto enquanto o app estiver aberto.
 BASE="$BASE"
 exec "\$BASE/node/bin/node" "\$BASE/start.mjs"
 EOF
@@ -92,8 +94,8 @@ cat > "$APP/Contents/Info.plist" <<'EOF'
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>CFBundleName</key><string>Account Rotation</string>
-  <key>CFBundleDisplayName</key><string>Account Rotation</string>
+  <key>CFBundleName</key><string>ClaudEco</string>
+  <key>CFBundleDisplayName</key><string>ClaudEco</string>
   <key>CFBundleIdentifier</key><string>br.com.ecoeletrica.account-rotation</string>
   <key>CFBundleExecutable</key><string>account-rotation</string>
   <key>CFBundleIconFile</key><string>icon</string>
@@ -112,7 +114,7 @@ done
 iconutil -c icns "$ICONES" -o "$APP/Contents/Resources/icon.icns" || true
 touch "$APP"
 
-passo "Pronto! Abrindo o Account Rotation..."
+passo "Pronto! Abrindo o ClaudEco..."
 echo "  Ao abrir, o app configura a statusline do Claude Code para ler o uso das contas (a que já existir continua aparecendo)."
 open "$APP"
-printf '\n\033[36mDaqui para frente, abra pelo "Account Rotation" no Launchpad, no Spotlight ou em ~/Applications.\033[0m\n'
+printf '\n\033[36mDaqui para frente, abra pelo "ClaudEco" no Launchpad, no Spotlight ou em ~/Applications.\033[0m\n'
