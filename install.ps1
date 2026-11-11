@@ -1,10 +1,10 @@
-# Instalador do Account Rotation para Windows. Roda uma vez, num PowerShell comum (sem administrador):
+# Instalador do ClaudEco para Windows. Roda uma vez, num PowerShell comum (sem administrador):
 #   irm https://raw.githubusercontent.com/tiecoeletrica/account-rotation-releases/main/install.ps1 | iex
 # (do repositório, e não da Release: lá o GitHub entrega como texto UTF-8, e os acentos chegam certos)
 # Rodar de novo conserta a instalação (atalhos, lançador, Node) sem apagar nada.
 #
 # Instala em %LOCALAPPDATA%\AccountRotation: o Node portátil, a última versão do app e o lançador. Instala o Google Chrome
-# (só para o usuário) se ele faltar. Cria o atalho "Account Rotation" na área de trabalho e no menu Iniciar, e abre o app.
+# (só para o usuário) se ele faltar. Cria o atalho "ClaudEco" na área de trabalho e no menu Iniciar, e abre o app.
 # As atualizações depois disso o próprio app faz, ao abrir.
 #
 # Variáveis para teste: AR_RELEASES_URL (de onde baixar), AR_BASE (pasta da instalação), AR_ATALHOS (pasta dos atalhos)
@@ -25,7 +25,7 @@ function AcharChrome {
 }
 
 try {
-  Write-Host 'Instalando o Account Rotation' -ForegroundColor Cyan
+  Write-Host 'Instalando o ClaudEco' -ForegroundColor Cyan
   New-Item -ItemType Directory -Force $Base | Out-Null
   $tmp = Join-Path $env:TEMP ("ar-instalador-" + (Get-Random))
   New-Item -ItemType Directory -Force $tmp | Out-Null
@@ -83,7 +83,7 @@ try {
   Copy-Item "$versao\app\public\icon.svg", "$versao\app\public\icon-512.png", "$versao\app\public\icon.ico" $Base -Force
   # abre o lançador sem janela de console
   @'
-' Abre o Account Rotation sem janela de console (criado pelo instalador)
+' Abre o ClaudEco sem janela de console (criado pelo instalador)
 Set fso = CreateObject("Scripting.FileSystemObject")
 pasta = fso.GetParentFolderName(WScript.ScriptFullName)
 Set sh = CreateObject("WScript.Shell")
@@ -96,20 +96,22 @@ sh.Run """" & pasta & "\node\node.exe"" """ & pasta & "\start.mjs""", 0, False
   $ws = New-Object -ComObject WScript.Shell
   foreach ($pasta in $Atalhos) {
     New-Item -ItemType Directory -Force $pasta | Out-Null
-    $l = $ws.CreateShortcut((Join-Path $pasta 'Account Rotation.lnk'))
+    # o atalho com o nome antigo (o app se chamava Account Rotation) sai, para não ficarem dois
+    Remove-Item (Join-Path $pasta 'Account Rotation.lnk') -Force -ErrorAction SilentlyContinue
+    $l = $ws.CreateShortcut((Join-Path $pasta 'ClaudEco.lnk'))
     $l.TargetPath = Join-Path $env:WINDIR 'System32\wscript.exe'
     $l.Arguments = '"' + (Join-Path $Base 'start.vbs') + '"'
     $l.WorkingDirectory = $Base
     $l.IconLocation = (Join-Path $Base 'icon.ico') + ',0'
-    $l.Description = 'Rodízio das contas do Claude Code'
+    $l.Description = 'ClaudEco' # o texto que aparece ao parar o mouse no atalho: só o nome
     $l.Save()
   }
 
   Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
-  Passo 'Pronto! Abrindo o Account Rotation...'
+  Passo 'Pronto! Abrindo o ClaudEco...'
   Write-Host '  Ao abrir, o app configura a statusline do Claude Code para ler o uso das contas (a que já existir continua aparecendo).'
   Start-Process (Join-Path $env:WINDIR 'System32\wscript.exe') -ArgumentList ('"' + (Join-Path $Base 'start.vbs') + '"')
-  Write-Host "`nDaqui para frente, abra pelo atalho 'Account Rotation' na área de trabalho ou no menu Iniciar." -ForegroundColor Cyan
+  Write-Host "`nDaqui para frente, abra pelo atalho 'ClaudEco' na área de trabalho ou no menu Iniciar." -ForegroundColor Cyan
 }
 catch {
   Write-Host "`nA instalação parou: $($_.Exception.Message)" -ForegroundColor Red
